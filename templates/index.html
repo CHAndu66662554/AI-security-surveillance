@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fall Detection & Crowd Monitoring System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>AI Safety Monitoring System</h1>
+            </div>
+            <div class="system-status">
+                <div class="status-indicator active"></div>
+                <span>System Active</span>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #4CAF50;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total People Detected</h3>
+                    <p class="stat-value" id="total-people">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #FF9800;">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Cameras</h3>
+                    <p class="stat-value" id="active-cameras">0/4</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #F44336;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Fall Incidents</h3>
+                    <p class="stat-value" id="fall-incidents">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #2196F3;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Max Crowd Density</h3>
+                    <p class="stat-value" id="max-crowd">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camera Grid -->
+        <div class="camera-grid">
+            <!-- Camera 1 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <h3><i class="fas fa-camera"></i> Camera 1</h3>
+                    <div class="camera-status">
+                        <span class="status-offline" id="status-1">Offline</span>
+                        <div class="camera-controls">
+                            <button class="btn-control" onclick="openCameraMenu(1)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu" id="menu-1">
+                                <label class="dropdown-item">
+                                    <i class="fas fa-upload"></i> Upload Video
+                                    <input type="file" accept="video/*" class="file-input" 
+                                           onchange="uploadVideo(event, 1)" style="display: none;">
+                                </label>
+                                <div class="dropdown-item" onclick="connectIPCamera(1)">
+                                    <i class="fas fa-wifi"></i> Connect IP Camera
+                                </div>
+                                <div class="dropdown-item" onclick="closeCamera(1)">
+                                    <i class="fas fa-power-off"></i> Turn Off
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camera-feed">
+                    <img id="feed-1" src="" alt="Camera 1 Feed">
+                    <div class="feed-overlay">
+                        <div class="feed-stats">
+                            <span class="people-count" id="count-1">0 people</span>
+                            <span class="fall-alert" id="alert-1"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera 2 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <h3><i class="fas fa-camera"></i> Camera 2</h3>
+                    <div class="camera-status">
+                        <span class="status-offline" id="status-2">Offline</span>
+                        <div class="camera-controls">
+                            <button class="btn-control" onclick="openCameraMenu(2)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu" id="menu-2">
+                                <label class="dropdown-item">
+                                    <i class="fas fa-upload"></i> Upload Video
+                                    <input type="file" accept="video/*" class="file-input" 
+                                           onchange="uploadVideo(event, 2)" style="display: none;">
+                                </label>
+                                <div class="dropdown-item" onclick="connectIPCamera(2)">
+                                    <i class="fas fa-wifi"></i> Connect IP Camera
+                                </div>
+                                <div class="dropdown-item" onclick="closeCamera(2)">
+                                    <i class="fas fa-power-off"></i> Turn Off
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camera-feed">
+                    <img id="feed-2" src="" alt="Camera 2 Feed">
+                    <div class="feed-overlay">
+                        <div class="feed-stats">
+                            <span class="people-count" id="count-2">0 people</span>
+                            <span class="fall-alert" id="alert-2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera 3 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <h3><i class="fas fa-camera"></i> Camera 3</h3>
+                    <div class="camera-status">
+                        <span class="status-offline" id="status-3">Offline</span>
+                        <div class="camera-controls">
+                            <button class="btn-control" onclick="openCameraMenu(3)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu" id="menu-3">
+                                <label class="dropdown-item">
+                                    <i class="fas fa-upload"></i> Upload Video
+                                    <input type="file" accept="video/*" class="file-input" 
+                                           onchange="uploadVideo(event, 3)" style="display: none;">
+                                </label>
+                                <div class="dropdown-item" onclick="connectIPCamera(3)">
+                                    <i class="fas fa-wifi"></i> Connect IP Camera
+                                </div>
+                                <div class="dropdown-item" onclick="closeCamera(3)">
+                                    <i class="fas fa-power-off"></i> Turn Off
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camera-feed">
+                    <img id="feed-3" src="" alt="Camera 3 Feed">
+                    <div class="feed-overlay">
+                        <div class="feed-stats">
+                            <span class="people-count" id="count-3">0 people</span>
+                            <span class="fall-alert" id="alert-3"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera 4 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <h3><i class="fas fa-camera"></i> Camera 4</h3>
+                    <div class="camera-status">
+                        <span class="status-offline" id="status-4">Offline</span>
+                        <div class="camera-controls">
+                            <button class="btn-control" onclick="openCameraMenu(4)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu" id="menu-4">
+                                <label class="dropdown-item">
+                                    <i class="fas fa-upload"></i> Upload Video
+                                    <input type="file" accept="video/*" class="file-input" 
+                                           onchange="uploadVideo(event, 4)" style="display: none;">
+                                </label>
+                                <div class="dropdown-item" onclick="connectIPCamera(4)">
+                                    <i class="fas fa-wifi"></i> Connect IP Camera
+                                </div>
+                                <div class="dropdown-item" onclick="closeCamera(4)">
+                                    <i class="fas fa-power-off"></i> Turn Off
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camera-feed">
+                    <img id="feed-4" src="" alt="Camera 4 Feed">
+                    <div class="feed-overlay">
+                        <div class="feed-stats">
+                            <span class="people-count" id="count-4">0 people</span>
+                            <span class="fall-alert" id="alert-4"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Panel -->
+        <div class="alerts-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-bell"></i> Recent Alerts</h3>
+                <button class="btn-clear" onclick="clearAlerts()">Clear All</button>
+            </div>
+            <div class="alerts-list" id="alerts-list">
+                <div class="alert-item info">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="alert-content">
+                        <p>System started. Ready to monitor.</p>
+                        <span class="alert-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IP Camera Modal -->
+        <div class="modal" id="ipModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Connect IP Camera</h3>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="cameraId">Camera Number:</label>
+                        <select id="cameraId" class="form-control">
+                            <option value="1">Camera 1</option>
+                            <option value="2">Camera 2</option>
+                            <option value="3">Camera 3</option>
+                            <option value="4">Camera 4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ipAddress">IP Address:</label>
+                        <input type="text" id="ipAddress" class="form-control" 
+                               placeholder="e.g., 192.168.1.100">
+                    </div>
+                    <div class="form-group">
+                        <label for="port">Port (optional):</label>
+                        <input type="text" id="port" class="form-control" 
+                               placeholder="80" value="80">
+                    </div>
+                    <div class="modal-info">
+                        <i class="fas fa-info-circle"></i>
+                        <p>For testing, you can leave IP blank to use simulated feed.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn-primary" onclick="connectCamera()">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
